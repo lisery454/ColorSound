@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lisery.color_sound.dao.ISoundDao">
+    <resultMap id="BaseResultMap" type="com.lisery.color_sound.entity.Sound">
+    </resultMap>
+    <!--id是之前DAO中的函数名，#{}中的是之前DAO函数中的@参数中的字符串-->
+    <select id="getSoundById" resultMap="BaseResultMap" parameterType="com.lisery.color_sound.entity.Sound">
+        select *
+        from color_sound.sound
+        where id = #{id}
+    </select>
+
+    <insert id="addSound" parameterType="com.lisery.color_sound.entity.Sound">
+        insert into color_sound.sound
+            (name, color, url)
+        values (#{name}, #{color}, #{url})
+    </insert>
+
+    <select id="getRandomSound" resultType="com.lisery.color_sound.entity.Sound">
+        SELECT *
+        FROM sound
+        ORDER BY RAND()
+        LIMIT #{count};
+    </select>
+
+</mapper>

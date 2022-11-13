@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,8 +18,8 @@ import java.text.SimpleDateFormat;
 @Api(tags = "File控制器")
 public class FileController {
     //绑定文件上传路径到uploadPath
-    @Value("${web.upload-path}")
-    private String uploadPath;
+    @Value("${web.sound-path}")
+    private String soundPath;
 
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd/");
 
@@ -31,7 +31,7 @@ public class FileController {
         // 比如：/2019/06/06/cf13891e-4b95-4000-81eb-b6d70ae44930.png
 //        String format = sdf.format(new Date());
 //        File folder = new File(uploadPath + format);
-        File folder = new File(uploadPath);
+        File folder = new File(soundPath);
 
         if (!folder.isDirectory()) {
             folder.mkdirs();
@@ -59,7 +59,7 @@ public class FileController {
     @ResponseBody
     @ApiOperation("下载文件")
     public String downLoad(@ApiParam("文件名") @PathVariable("filename") String filename, HttpServletResponse response) throws UnsupportedEncodingException {
-        File file = new File(uploadPath + "/" + filename);
+        File file = new File(soundPath + "/" + filename);
         //System.out.println(uploadPath + "/" + filename);
         //判断文件是否存在，其实不用判断，因为不存在也设置了对应的异常处理
         if (file.exists()) {  //文件存在
@@ -94,4 +94,5 @@ public class FileController {
 
         return "文件不存在";
     }
+
 }
