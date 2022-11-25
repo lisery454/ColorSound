@@ -7,7 +7,7 @@ import java.util.List;
 public interface ISoundService {
     Sound getSoundById(int id);
 
-    void addSound(String name, int color, String url);
+    void addSound(String name, int color, String url, String duration);
 
     List<Sound> getRandomSound(int count);
 }

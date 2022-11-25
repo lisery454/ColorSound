@@ -2,7 +2,8 @@ package com.lisery.color_sound.controller;
 
 import com.lisery.color_sound.entity.Sound;
 import com.lisery.color_sound.service.ISoundService;
-import com.lisery.color_sound.service.impl.SoundService;
+import com.lisery.color_sound.utils.ResponsePackage;
+import com.lisery.color_sound.utils.ResponseStatusCode;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -33,53 +34,63 @@ public class SoundController {
 
     @ApiOperation("根据id获取sound信息")
     @RequestMapping(value = "/getById", method = RequestMethod.POST)
-    public Sound getSoundById(@ApiParam("id") @RequestParam int id) {
-        return soundService.getSoundById(id);
+    public ResponsePackage<Sound> getSoundById(@ApiParam("id") @RequestParam int id) {
+        Sound sound = soundService.getSoundById(id);
+        if (sound == null) return new ResponsePackage<>(ResponseStatusCode.FAIL, "找不到该id对应的Sound", null);
+        else return new ResponsePackage<>(ResponseStatusCode.SUCCESS, "获取成功", soundService.getSoundById(id));
     }
 
     @ApiOperation("随机获取sound信息")
     @RequestMapping(value = "/getRandom", method = RequestMethod.POST)
-    public List<Sound> getRandomSound(@ApiParam("sound个数") @RequestParam int count) {
-        return soundService.getRandomSound(count);
+    public ResponsePackage<List<Sound>> getRandomSound() {
+        List<Sound> randomSounds = soundService.getRandomSound(10);
+        return new ResponsePackage<>(ResponseStatusCode.SUCCESS, "成功返回" + randomSounds.size() + "条数据", randomSounds);
     }
 
     @ApiOperation("上传sound")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public String uploadSound(@ApiParam("声音") @RequestPart("sound") MultipartFile sound,
-                              @ApiParam("颜色") @RequestParam int color,
-                              HttpServletRequest request) {
+    public ResponsePackage<String> uploadSound(@ApiParam("声音") @RequestPart("sound") MultipartFile sound,
+                                               @ApiParam("颜色") @RequestParam int color,
+                                               @ApiParam("时长") @RequestParam String duration,
+                                               @ApiParam("声音名字") @RequestParam String name,
+                                               HttpServletRequest request) {
+
+        if (sound == null) {
+            return new ResponsePackage<>(ResponseStatusCode.FAIL, "声音文件不能为空", null);
+        }
+
         // 获取文件名
         String originalFilename = sound.getOriginalFilename();
+
+        if (originalFilename == null) {
+            return new ResponsePackage<>(ResponseStatusCode.FAIL, "声音文件名不能为空", null);
+        }
+
         // 获取文件后缀
         String suffix = originalFilename.substring(originalFilename.lastIndexOf('.') + 1);
 
-        String soundName = originalFilename.substring(0, originalFilename.lastIndexOf('.'));
         // 判断是不是可以接收的文件类型
-        //public final static String avatarFileSuffix = ".mp3.jpeg.png";
-        //if (!FileSuffix.avatarFileSuffix.contains(suffix)) {
-        //    return ResultBean.error(ResultEnum.FILE_TYPE_ERROR);
-        //}
+        if (!suffix.equalsIgnoreCase("mp3")) {
+            return new ResponsePackage<>(ResponseStatusCode.FAIL, "文件格式不符，应该是MP3", null);
+        }
+
         // 用uuid作为新的文件名
-        String newName = UUID.randomUUID() + "." + suffix;
-
+        String url = UUID.randomUUID() + "." + suffix;
         File folder = new File(soundPath);
-
-        if (!folder.isDirectory())
-            folder.mkdirs();
+        if (!folder.isDirectory()) folder.mkdirs();
 
         try {
             // 文件保存
-            sound.transferTo(new File(folder, newName));
-
+            sound.transferTo(new File(folder, url));
             //更改数据库
-            soundService.addSound(soundName, color, newName);
-
+            soundService.addSound(name, color, url, duration);
             // 返回上传文件的访问路径
-            return request.getScheme() + "://" + request.getServerName()
-                    + ":" + request.getServerPort() + "/" + newName;
+            return new ResponsePackage<>(ResponseStatusCode.SUCCESS, "成功上传Sound", request.getScheme() + "://" + request.getServerName()
+                    + ":" + request.getServerPort() + "/" + url);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "fail";
+
+        return new ResponsePackage<>(ResponseStatusCode.FAIL, "上传失败", null);
     }
 }

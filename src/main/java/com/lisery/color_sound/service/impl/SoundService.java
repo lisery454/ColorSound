@@ -19,8 +19,8 @@ public class SoundService implements ISoundService {
     }
 
     @Override
-    public void addSound(String name, int color, String url) {
-        soundDao.addSound(name, color, url);
+    public void addSound(String name, int color, String url, String duration) {
+        soundDao.addSound(name, color, url, duration);
     }
 
     @Override

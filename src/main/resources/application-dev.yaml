@@ -1,5 +1,5 @@
 web:
-  sound-path: D:/Desktop/
+  sound-path: D:/Desktop/Sound/
 logging:
   file:
     path: D:/Temp/

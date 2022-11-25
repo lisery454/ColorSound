@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: app
+    active: dev
   datasource:
     #    driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://43.139.148.247:3306/color_sound?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&useSSL=false

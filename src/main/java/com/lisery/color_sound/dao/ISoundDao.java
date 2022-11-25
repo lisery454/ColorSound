@@ -11,7 +11,10 @@ import java.util.List;
 public interface ISoundDao {
     Sound getSoundById(@Param("id") int id);
 
-    void addSound(@Param("name") String name, @Param("color") int color, @Param("url") String url);
+    void addSound(@Param("name") String name,
+                  @Param("color") int color,
+                  @Param("url") String url,
+                  @Param("duration") String duration);
 
     List<Sound> getRandomSound(@Param("count") int count);
 }

@@ -14,8 +14,8 @@
 
     <insert id="addSound" parameterType="com.lisery.color_sound.entity.Sound">
         insert into color_sound.sound
-            (name, color, url)
-        values (#{name}, #{color}, #{url})
+            (name, color, url, duration)
+        values (#{name}, #{color}, #{url}, #{duration})
     </insert>
 
     <select id="getRandomSound" resultType="com.lisery.color_sound.entity.Sound">
